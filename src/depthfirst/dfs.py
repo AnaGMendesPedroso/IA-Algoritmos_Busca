@@ -41,13 +41,24 @@ class No:
                 and self.qtdBoteMargemEsquerda == estadoFinal[2]:
             return True
 
-    def verifica_validade(self, no_pai):
-        if no_pai.get_bote() == 0 and self.get_canibais() + no_pai.get_canibais() > self.get_missionarios():
-            return False
-        elif no_pai.get_bote() == 1 and (self.get_canibais() > self.get_missionarios()):
-            return False
-        else:
+    def verifica_validade(self, movimento):
+        canibais_oposto = 3 - self.get_canibais()
+        missionarios_oposto = 3 - self.get_missionarios()
+        # and canibais_oposto < missionarios_oposto:
+        if self.get_canibais() != 0 and self.get_canibais() <= self.get_missionarios():
+            if self.get_bote() == 0 and (movimento.get_canibais_no_barco() - self.get_canibais() <= self.get_missionarios()):
+                return True
+
+            if self.get_bote() == 1 and (movimento.get_canibais_no_barco() + self.get_canibais() <= self.get_missionarios()):
+                return True
+
+        elif self.get_canibais() == 0 and (movimento.get_canibais_no_barco() + canibais_oposto <= missionarios_oposto):
             return True
+
+        elif canibais_oposto == 0 and (movimento.get_canibais_no_barco() + self.get_canibais() <= self.get_missionarios()):
+            return True
+
+        return False
 
     def adiciona_pai(self, novopai):
         self.listaNosPais.append(novopai)
@@ -75,22 +86,26 @@ class Grafo:
 
     def gerar_nos_filhos(self, no_pai, movimentos_possiveis):
         for movimento in movimentos_possiveis:
+            canibais = 0
+            missionarios = 0
+            no_filho = None
+
             if no_pai.get_bote() == 1:
-                subtrai_canibais = no_pai.get_canibais() - movimento.get_canibais_no_barco()
-                subtrai_missionarios = no_pai.get_missionarios() - movimento.get_missionarios_no_barco()
-                if subtrai_canibais >= 0 and subtrai_missionarios >= 0:
-                    self.cria_no(subtrai_canibais, subtrai_missionarios, 0, no_pai)
+                canibais = no_pai.get_canibais() - movimento.get_canibais_no_barco()
+                missionarios = no_pai.get_missionarios() - movimento.get_missionarios_no_barco()
+                if 0 <= canibais <= 3 and 0 <= missionarios <= 3:
+                    no_filho = No(canibais, missionarios, 0)
+                    self.geracao_final(movimento, no_filho, no_pai)
+
             else:
-                soma_canibais = no_pai.get_canibais() + movimento.get_canibais_no_barco()
-                soma_missionarios = no_pai.get_missionarios() + movimento.get_missionarios_no_barco()
-                if soma_canibais <= self.noInicial.get_canibais() \
-                        and soma_missionarios <= self.noInicial.get_missionarios():
-                    self.cria_no(soma_canibais, soma_missionarios, 1, no_pai)
+                canibais = no_pai.get_canibais() + movimento.get_canibais_no_barco()
+                missionarios = no_pai.get_missionarios() + movimento.get_missionarios_no_barco()
+                if 0 <= canibais <= 3 and 0 <= missionarios <= 3:
+                    no_filho = No(canibais, missionarios, 1)
+                    self.geracao_final(movimento, no_filho, no_pai)
 
-    def cria_no(self, qtdCanib ,qtdMissio, posicaoBote, no_pai):
-        no_filho = No(qtdCanib, qtdMissio, posicaoBote)
-
-        validade = no_filho.verifica_validade(no_pai)
+    def geracao_final(self, movimento, no_filho, no_pai):
+        validade = no_filho.verifica_validade(movimento)
         if validade:
             resultado = self.verifica_se_no_ja_foi_criado(no_filho)
             if resultado is None:
@@ -99,6 +114,7 @@ class Grafo:
                 self.LISTA_NOS.append(no_filho)
             else:
                 resultado.adiciona_pai(no_pai)
+
 
 class DFS:
 
@@ -113,12 +129,12 @@ class DFS:
     def printa_fronteira(self):
         for no in self.fronteira:
             print(self.formata_saida(no))
-        print('-'*30)
+        print('-' * 30)
 
     def printa_candidatos(self):
         for no in self.candidatos:
             print(self.formata_saida(no))
-        print('-'*30)
+        print('-' * 30)
 
     def formata_saida(self, no):
         return '[' + str(no.get_canibais()) + ',' + str(no.get_missionarios()) + ',' + str(no.get_bote()) + ']'

@@ -1,10 +1,10 @@
 import src.depthfirst.dfs
 
 movimentos_validos = []
-mov1 = src.depthfirst.dfs.Movimento(0,1)
 mov2 = src.depthfirst.dfs.Movimento(1,0)
-mov3 = src.depthfirst.dfs.Movimento(0,2)
 mov4 = src.depthfirst.dfs.Movimento(2,0)
+mov1 = src.depthfirst.dfs.Movimento(0,1)
+mov3 = src.depthfirst.dfs.Movimento(0,2)
 mov5 = src.depthfirst.dfs.Movimento(1,1)
 
 movimentos_validos.append(mov1)
