@@ -42,23 +42,18 @@ class No:
             return True
 
     def verifica_validade(self, movimento):
+        verificacao = False
         canibais_oposto = 3 - self.get_canibais()
         missionarios_oposto = 3 - self.get_missionarios()
-        # and canibais_oposto < missionarios_oposto:
-        if self.get_canibais() != 0 and self.get_canibais() <= self.get_missionarios():
-            if self.get_bote() == 0 and (movimento.get_canibais_no_barco() - self.get_canibais() <= self.get_missionarios()):
-                return True
 
-            if self.get_bote() == 1 and (movimento.get_canibais_no_barco() + self.get_canibais() <= self.get_missionarios()):
-                return True
+        if 0 <= self.get_canibais() <= 3 and 0 <= self.get_missionarios() <= 3 \
+                and (self.get_missionarios() == 0
+                     or self.get_missionarios() == 3
+                     or self.get_missionarios() == self.get_canibais()):
 
-        elif self.get_canibais() == 0 and (movimento.get_canibais_no_barco() + canibais_oposto <= missionarios_oposto):
-            return True
+            verificacao = True
 
-        elif canibais_oposto == 0 and (movimento.get_canibais_no_barco() + self.get_canibais() <= self.get_missionarios()):
-            return True
-
-        return False
+        return verificacao
 
     def adiciona_pai(self, novopai):
         self.listaNosPais.append(novopai)
@@ -84,8 +79,8 @@ class Grafo:
                 break
         return verificacao
 
-    def gerar_nos_filhos(self, no_pai, movimentos_possiveis):
-        for movimento in movimentos_possiveis:
+    def gerar_nos_filhos(self, no_pai):
+        for movimento in self.movimentosPossiveis:
             canibais = 0
             missionarios = 0
             no_filho = None
@@ -121,6 +116,7 @@ class DFS:
     def __init__(self, estadoInicial, estadoFinal, movimentosPossiveis):
         self.candidatos = []
         self.fronteira = []
+        self.contador_solucao_encontrada = 0
         self.grafo = Grafo(estadoInicial, movimentosPossiveis)
         self.estadoFinal = estadoFinal
         self.estadoInicial = estadoInicial
@@ -139,34 +135,34 @@ class DFS:
     def formata_saida(self, no):
         return '[' + str(no.get_canibais()) + ',' + str(no.get_missionarios()) + ',' + str(no.get_bote()) + ']'
 
-    def busca_em_profundidade(self, no, movimentosPossiveis):
-        if len(self.candidatos) == 0:
-            print("\nNós percorridos:")
-            self.printa_fronteira()
+    def busca_em_profundidade(self):
+        if len(self.candidatos) > 0:
+            no = self.candidatos.pop()
+            if no.get_canibais() == self.estadoFinal.get_canibais() and no.get_missionarios() == self.estadoFinal.get_missionarios() and no.get_bote() == self.estadoFinal.get_bote():
+                self.contador_solucao_encontrada += 1
+                print('#' * 30)
+                print('SOLUÇÃO ENCONTRADA: ')
+                self.printa_fronteira()
+                print(self.formata_saida(self.estadoFinal))
+                print('#' * 30)
 
-        elif no.get_canibais() == self.estadoFinal.get_canibais() \
-                and no.get_missionarios() == self.estadoFinal.get_missionarios() \
-                and no.get_bote() == self.estadoFinal.get_bote():
-            print('#' * 30)
-            print("SOLUÇÃO ENCONTRADA: ")
-            self.printa_fronteira()
-            print('#' * 30)
-
-        else:
             if not no.get_foi_visitado():
-                print("\nNó desempilhado:")
+                print("\nNó desempilhado e adicionado a fronteira:")
                 print(self.formata_saida(no))
                 self.fronteira.append(no)
                 no.set_foi_visitado()
 
-            self.grafo.gerar_nos_filhos(no, movimentosPossiveis)
+            self.grafo.gerar_nos_filhos(no)
             for noFilho in no.get_lista_filhos():
                 if not self.candidatos.__contains__(noFilho):
                     self.candidatos.append(noFilho)
 
             print("\nNós candidatos empilhados:")
             self.printa_candidatos()
-            self.busca_em_profundidade(self.candidatos.pop(), movimentosPossiveis)
+            self.busca_em_profundidade()
+        else:
+            print("Não foi possível atingir o estado final desejado\n Estado final: " + self.formata_saida(
+                self.estadoFinal))
 
 
 class Movimento:

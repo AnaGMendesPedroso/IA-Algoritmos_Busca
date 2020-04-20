@@ -1,10 +1,10 @@
 import src.depthfirst.dfs
 
 movimentos_validos = []
-mov2 = src.depthfirst.dfs.Movimento(1,0)
-mov4 = src.depthfirst.dfs.Movimento(2,0)
-mov1 = src.depthfirst.dfs.Movimento(0,1)
-mov3 = src.depthfirst.dfs.Movimento(0,2)
+mov1 = src.depthfirst.dfs.Movimento(1,0)
+mov2 = src.depthfirst.dfs.Movimento(2,0)
+mov3 = src.depthfirst.dfs.Movimento(0,1)
+mov4 = src.depthfirst.dfs.Movimento(0,2)
 mov5 = src.depthfirst.dfs.Movimento(1,1)
 
 movimentos_validos.append(mov1)
@@ -16,4 +16,4 @@ movimentos_validos.append(mov5)
 no_inicial = src.depthfirst.dfs.No(3, 3, 1)
 no_final = src.depthfirst.dfs.No(0,0,0)
 dfs = src.depthfirst.dfs.DFS(no_inicial,no_final,movimentos_validos)
-dfs.busca_em_profundidade(no_inicial, movimentos_validos)
+dfs.busca_em_profundidade()
