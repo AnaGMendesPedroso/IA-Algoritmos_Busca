@@ -3,6 +3,19 @@
 # - Davidson Denis Ferreira Guimaraes
 # - Larissa Fraga Pinto
 
+def formata_saida(no):
+    return '[' + str(no.get_canibais()) + ',' + str(no.get_missionarios()) + ',' + str(no.get_bote()) + ']'
+
+
+def compara_nos(no1, no2):
+    comparacao = False
+    if no1.get_canibais() == no2.get_canibais() \
+            and no1.get_missionarios() == no2.get_missionarios() \
+            and no1.get_bote() == no2.get_bote():
+        comparacao = True
+
+    return comparacao
+
 
 class No:
 
@@ -10,15 +23,15 @@ class No:
         self.qtdCanibais = qtdCanibais
         self.qtdMissionarios = qtdMissionarios
         self.qtdBoteMargemEsquerda = qtdBoteMargemEsquerda
-        self.foiVisitado = False
+        self.solucao_que_foi_visitado = 0
         self.listaNosPais = []
         self.listaNosFilhos = []
 
-    def set_foi_visitado(self):
-        self.foiVisitado = True
+    def set_solucao_que_foi_visitado(self, id_solucao):
+        self.solucao_que_foi_visitado = id_solucao
 
-    def get_foi_visitado(self):
-        return self.foiVisitado
+    def get_solucao_que_foi_visitado(self):
+        return self.solucao_que_foi_visitado
 
     def get_canibais(self):
         return self.qtdCanibais
@@ -35,13 +48,7 @@ class No:
     def get_lista_filhos(self):
         return self.listaNosFilhos
 
-    def verifica_se_eh_no_objetivo(self, estadoFinal):
-        if self.qtdCanibais == estadoFinal[0] \
-                and self.qtdMissionarios == estadoFinal[1] \
-                and self.qtdBoteMargemEsquerda == estadoFinal[2]:
-            return True
-
-    def verifica_validade(self, movimento):
+    def verifica_validade(self):
         verificacao = False
         canibais_oposto = 3 - self.get_canibais()
         missionarios_oposto = 3 - self.get_missionarios()
@@ -56,113 +63,146 @@ class No:
         return verificacao
 
     def adiciona_pai(self, novopai):
-        self.listaNosPais.append(novopai)
+        if self.pai_nao_eh_filho(novopai):
+            self.listaNosPais.append(novopai)
 
     def adiciona_filho(self, novofilho):
-        self.listaNosFilhos.append(novofilho)
+        if self.filho_nao_eh_pai(novofilho):
+            self.listaNosFilhos.append(novofilho)
 
+    def pai_nao_eh_filho(self, pai):
+        verificacao = True
+        for no in self.get_lista_filhos():
+            if compara_nos(no, pai):
+                verificacao = False
+        return verificacao
+
+    def filho_nao_eh_pai(self, novofilho):
+        verificacao = True
+        for no in self.get_lista_pais():
+            if compara_nos(no, novofilho):
+                verificacao = False
+        return verificacao
 
 class Grafo:
 
-    def __init__(self, noInicial, movimentosPossiveis):
+    def __init__(self, noInicial,noFinal, movimentosPossiveis):
         self.noInicial = noInicial
+        self.noFinal = noFinal
         self.movimentosPossiveis = movimentosPossiveis
         self.LISTA_NOS = []
         self.LISTA_NOS.append(noInicial)
 
-    def verifica_se_no_ja_foi_criado(self, no):
-        verificacao = None
+    def gerar_grafo(self):
+        for no in self.LISTA_NOS:
+            self.gerar_nos_filhos(no)
 
-        for noAux in self.LISTA_NOS:
-            if no.get_canibais() == noAux.get_canibais() and no.get_missionarios() == noAux.get_missionarios() and no.get_bote() == noAux.get_bote():
-                verificacao = noAux
-                break
-        return verificacao
+        print('Estados do grafo gerado')
+        for no in self.LISTA_NOS:
+            print(formata_saida(no) + ' Filhos: '+' '.join([str(formata_saida(v)) for v in no.get_lista_filhos()]) + '\n\t\tPais: '+' '.join([str(formata_saida(v)) for v in no.get_lista_pais()]))
+        print('='*30)
 
     def gerar_nos_filhos(self, no_pai):
-        for movimento in self.movimentosPossiveis:
-            canibais = 0
-            missionarios = 0
-            no_filho = None
+        if not compara_nos(no_pai, self.noFinal):
+            for movimento in self.movimentosPossiveis:
+                canibais = 0
+                missionarios = 0
+                bote = -1
+                no_filho = None
 
-            if no_pai.get_bote() == 1:
-                canibais = no_pai.get_canibais() - movimento.get_canibais_no_barco()
-                missionarios = no_pai.get_missionarios() - movimento.get_missionarios_no_barco()
+                if no_pai.get_bote() == 1:
+                    canibais = no_pai.get_canibais() - movimento.get_canibais_no_barco()
+                    missionarios = no_pai.get_missionarios() - movimento.get_missionarios_no_barco()
+                    bote = 0
+
+                else:
+                    canibais = no_pai.get_canibais() + movimento.get_canibais_no_barco()
+                    missionarios = no_pai.get_missionarios() + movimento.get_missionarios_no_barco()
+                    bote = 1
+
                 if 0 <= canibais <= 3 and 0 <= missionarios <= 3:
-                    no_filho = No(canibais, missionarios, 0)
-                    self.geracao_final(movimento, no_filho, no_pai)
+                    no_filho = No(canibais, missionarios, bote)
+                    if not compara_nos(no_filho, self.noInicial):
+                        if no_filho.verifica_validade():
+                            self.geracao_final(no_filho, no_pai)
 
-            else:
-                canibais = no_pai.get_canibais() + movimento.get_canibais_no_barco()
-                missionarios = no_pai.get_missionarios() + movimento.get_missionarios_no_barco()
-                if 0 <= canibais <= 3 and 0 <= missionarios <= 3:
-                    no_filho = No(canibais, missionarios, 1)
-                    self.geracao_final(movimento, no_filho, no_pai)
+    def geracao_final(self, no_recem_criado, novo_pai):
+        no_ja_foi_criado = False
+        for no_grafo in self.LISTA_NOS:
+            for no_filho_grafo in no_grafo.get_lista_filhos():
+                if compara_nos(no_recem_criado, no_filho_grafo):
+                    no_ja_foi_criado = True
+                    no_filho_grafo.adiciona_pai(novo_pai)
+                    novo_pai.adiciona_filho(no_filho_grafo)
+                    break
+            if no_ja_foi_criado:
+                break
 
-    def geracao_final(self, movimento, no_filho, no_pai):
-        validade = no_filho.verifica_validade(movimento)
-        if validade:
-            resultado = self.verifica_se_no_ja_foi_criado(no_filho)
-            if resultado is None:
-                no_filho.adiciona_pai(no_pai)
-                no_pai.adiciona_filho(no_filho)
-                self.LISTA_NOS.append(no_filho)
-            else:
-                resultado.adiciona_pai(no_pai)
+        if not no_ja_foi_criado:
+            no_recem_criado.adiciona_pai(novo_pai)
+            novo_pai.adiciona_filho(no_recem_criado)
+            self.LISTA_NOS.append(no_recem_criado)
 
 
 class DFS:
 
     def __init__(self, estadoInicial, estadoFinal, movimentosPossiveis):
-        self.candidatos = []
         self.fronteira = []
+        self.nos_visitados = []
         self.contador_solucao_encontrada = 0
-        self.grafo = Grafo(estadoInicial, movimentosPossiveis)
-        self.estadoFinal = estadoFinal
         self.estadoInicial = estadoInicial
-        self.candidatos.append(estadoInicial)
+        self.estadoFinal = estadoFinal
+        self.grafo = Grafo(estadoInicial, estadoFinal, movimentosPossiveis)
+        self.fronteira.append(estadoInicial)
+
+    def printa_nos_visitados(self):
+        for no in self.nos_visitados:
+            print(formata_saida(no))
+        print('-' * 30)
 
     def printa_fronteira(self):
         for no in self.fronteira:
-            print(self.formata_saida(no))
-        print('-' * 30)
-
-    def printa_candidatos(self):
-        for no in self.candidatos:
-            print(self.formata_saida(no))
-        print('-' * 30)
-
-    def formata_saida(self, no):
-        return '[' + str(no.get_canibais()) + ',' + str(no.get_missionarios()) + ',' + str(no.get_bote()) + ']'
+            print(formata_saida(no))
 
     def busca_em_profundidade(self):
-        if len(self.candidatos) > 0:
-            no = self.candidatos.pop()
-            if no.get_canibais() == self.estadoFinal.get_canibais() and no.get_missionarios() == self.estadoFinal.get_missionarios() and no.get_bote() == self.estadoFinal.get_bote():
-                self.contador_solucao_encontrada += 1
-                print('#' * 30)
-                print('SOLUÇÃO ENCONTRADA: ')
-                self.printa_fronteira()
-                print(self.formata_saida(self.estadoFinal))
-                print('#' * 30)
+        if len(self.fronteira) > 0:
+            no = self.fronteira.pop()
 
-            if not no.get_foi_visitado():
-                print("\nNó desempilhado e adicionado a fronteira:")
-                print(self.formata_saida(no))
-                self.fronteira.append(no)
-                no.set_foi_visitado()
+            print("\nNó que será visitado:")
+            print(formata_saida(no))
+            print("\nFronteira antes da visita:")
+            self.printa_fronteira()
+            self.nos_visitados.append(no)
+            no.set_solucao_que_foi_visitado(self.contador_solucao_encontrada)
+            self.coloca_filhos_na_fronteira(no)
+            print("\nFronteira depois da visita:")
+            self.printa_fronteira()
+            print('-' * 30)
 
-            self.grafo.gerar_nos_filhos(no)
-            for noFilho in no.get_lista_filhos():
-                if not self.candidatos.__contains__(noFilho):
-                    self.candidatos.append(noFilho)
+            if self.verifica_se_estado_final_esta_na_fronteira():
+                self.formata_saida_solucao_encontrada()
 
-            print("\nNós candidatos empilhados:")
-            self.printa_candidatos()
-            self.busca_em_profundidade()
-        else:
-            print("Não foi possível atingir o estado final desejado\n Estado final: " + self.formata_saida(
-                self.estadoFinal))
+            else:
+                self.busca_em_profundidade()
+
+    def formata_saida_solucao_encontrada(self):
+        self.contador_solucao_encontrada += 1
+        print('#' * 30)
+        print(str(self.contador_solucao_encontrada) + 'ª SOLUÇÃO ENCONTRADA: ')
+        self.printa_nos_visitados()
+        print(formata_saida(self.estadoFinal))
+        print('#' * 30)
+
+    def coloca_filhos_na_fronteira(self, no):
+        for no_filho in no.get_lista_filhos():
+            self.fronteira.append(no_filho)
+
+    def verifica_se_estado_final_esta_na_fronteira(self):
+        verificacao = False
+        for no in self.fronteira:
+            if compara_nos(no, self.estadoFinal):
+                verificacao = True
+        return verificacao
 
 
 class Movimento:
