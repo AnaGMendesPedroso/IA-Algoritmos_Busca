@@ -23,12 +23,13 @@ class No:
         self.qtdCanibais = qtdCanibais
         self.qtdMissionarios = qtdMissionarios
         self.qtdBoteMargemEsquerda = qtdBoteMargemEsquerda
-        self.solucao_que_foi_visitado = 0
+        self.solucao_que_foi_visitado = []
         self.listaNosPais = []
         self.listaNosFilhos = []
 
-    def set_solucao_que_foi_visitado(self, id_solucao):
-        self.solucao_que_foi_visitado = id_solucao
+    def adiciona_solucao_que_foi_visitado(self, id_solucao, ordem):
+        sol = [id_solucao, ordem]
+        self.solucao_que_foi_visitado.append(sol)
 
     def get_solucao_que_foi_visitado(self):
         return self.solucao_que_foi_visitado
@@ -84,6 +85,7 @@ class No:
                 verificacao = False
         return verificacao
 
+
 class Grafo:
 
     def __init__(self, noInicial,noFinal, movimentosPossiveis):
@@ -92,6 +94,9 @@ class Grafo:
         self.movimentosPossiveis = movimentosPossiveis
         self.LISTA_NOS = []
         self.LISTA_NOS.append(noInicial)
+
+    def get_lista_nos_grafo(self):
+        return self.LISTA_NOS
 
     def gerar_grafo(self):
         for no in self.LISTA_NOS:
@@ -146,19 +151,25 @@ class Grafo:
 
 class DFS:
 
-    def __init__(self, estadoInicial, estadoFinal, movimentosPossiveis):
+    def __init__(self, grafo, estadoInicial, estadoFinal):
         self.fronteira = []
         self.nos_visitados = []
-        self.contador_solucao_encontrada = 0
+        self.contador_solucao_encontrada = 1
+        self.ordem_de_visita = 1
         self.estadoInicial = estadoInicial
         self.estadoFinal = estadoFinal
-        self.grafo = Grafo(estadoInicial, estadoFinal, movimentosPossiveis)
+        self.grafo = grafo
         self.fronteira.append(estadoInicial)
 
-    def printa_nos_visitados(self):
-        for no in self.nos_visitados:
-            print(formata_saida(no))
-        print('-' * 30)
+    def printa_nos_visitados(self, solucao, ordem):
+        aux = 1
+        for no in self.grafo:
+            momentos = no.get_solucao_que_foi_visitado()
+            for sol in momentos:
+                if aux <= ordem and sol[0] <= solucao and sol[1] == aux:
+                    print(formata_saida(no))
+                    aux = aux + 1
+                    break
 
     def printa_fronteira(self):
         for no in self.fronteira:
@@ -173,25 +184,25 @@ class DFS:
             print("\nFronteira antes da visita:")
             self.printa_fronteira()
             self.nos_visitados.append(no)
-            no.set_solucao_que_foi_visitado(self.contador_solucao_encontrada)
+            no.adiciona_solucao_que_foi_visitado(self.contador_solucao_encontrada, self.ordem_de_visita)
+            self.ordem_de_visita += 1
             self.coloca_filhos_na_fronteira(no)
             print("\nFronteira depois da visita:")
             self.printa_fronteira()
             print('-' * 30)
 
-            if self.verifica_se_estado_final_esta_na_fronteira():
+            if compara_nos(no, self.estadoFinal):
                 self.formata_saida_solucao_encontrada()
 
-            else:
-                self.busca_em_profundidade()
+            self.busca_em_profundidade()
 
     def formata_saida_solucao_encontrada(self):
-        self.contador_solucao_encontrada += 1
         print('#' * 30)
         print(str(self.contador_solucao_encontrada) + 'ª SOLUÇÃO ENCONTRADA: ')
-        self.printa_nos_visitados()
-        print(formata_saida(self.estadoFinal))
+        self.printa_nos_visitados(self.contador_solucao_encontrada, self.ordem_de_visita)
         print('#' * 30)
+        self.contador_solucao_encontrada += 1
+        self.ordem_de_visita = 1
 
     def coloca_filhos_na_fronteira(self, no):
         for no_filho in no.get_lista_filhos():
