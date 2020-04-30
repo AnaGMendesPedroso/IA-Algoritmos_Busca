@@ -216,9 +216,6 @@ class DFS:
 
             if len(irmaos) == 0 or not irmao_disparou_solucao:
                 no.set_solucao_ordem_de_visita(self.solucao_atual, primeira_solucao_no[1])
-            # else:
-            #     no_disparo.set_solucao_ordem_de_visita(self.solucao_atual, //ordem do irmao)
-            #
 
     def get_irmaos_estao_na_fronteira(self, no):
         irmaos = []
