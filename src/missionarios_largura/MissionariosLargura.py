@@ -1,86 +1,106 @@
-def son2str(posicao):
-	return ' '.join([str(v) for v in posicao])
+import time
 
-def estadoFinal(posicao):
-	goal = False
-	if posicao[0] == 0 and posicao[1] == 0 and posicao[3] == 0:
-		goal = True
-	return goal
+class Estado():        
 
-def geraEstados(posicao):
-    
-    listaDeEstados = []
-    
-    #casos de ida
-    #ir um missionario e um canibal
-    estado = [posicao[0] -1, posicao[1] -1 , 0]
-    listaDeEstados.append(estado)
+    def __init__(self,missionariosEsquerda, missionariosDireita, canibaisEsquerda, canibaisDireita, ladoRio):
 
-    #ir dois missionarios
-    estado = [posicao[0] -2, posicao[1], 0]
-    listaDeEstados.append(estado)
+        self.missionariosEsquerda = missionariosEsquerda
+        self.missionariosDireita = missionariosDireita
+        self.canibaisEsquerda = canibaisEsquerda
+        self.canibaisDireita = canibaisDireita
+        self.ladoRio = ladoRio
+        self.pai = None
+        self.filhos = []
 
-    #ir dois canibais
-    estado = [posicao[0], posicao[1] -2, 0]
-    listaDeEstados.append(estado)
+    def __str__(self):
 
-    #ir um missionario
-    estado = [posicao[0] -1, posicao[1], 0]
-    listaDeEstados.append(estado)
+        return 'Missionarios: {}\t| Missionarios: {}\nCanibais: {}\t| Canibais: {}'.format(self.missionariosEsquerda, self.missionariosDireita, self.canibaisEsquerda, self.canibaisDireita)
 
-    #ir um canibal
-    estado = [posicao[0], posicao[1] -1, 0]
-    listaDeEstados.append(estado)
+    def verificaEstado(self):
+   
+        if ((self.missionariosEsquerda < 0) or (self.missionariosDireita < 0)):
+            return False
 
-    #casos de volta
-    #voltar um missionario e um canibal
-    estado = [posicao[0] +1, posicao[1] +1 , 1]
-    listaDeEstados.append(estado)
+        if ((self.canibaisEsquerda < 0) or (self.canibaisDireita < 0)):
+            return False
 
-    #voltar dois missionarios
-    estado = [posicao[0] +2, posicao[1], 1]
-    listaDeEstados.append(estado)
+        return ((self.missionariosEsquerda == 0 or self.missionariosEsquerda >= self.canibaisEsquerda) and (self.missionariosDireita == 0 or self.missionariosDireita >= self.canibaisDireita))
 
-    #voltar dois canibais
-    estado = [posicao[0], posicao[1]+2, 1]
-    listaDeEstados.append(estado)
+    def estadoFinal(self):
+        ladoEsquerdo = self.missionariosEsquerda == self.canibaisEsquerda == 0
+        ladoDireito = self.missionariosDireita == self.canibaisDireita == 3
+        return ladoEsquerdo and ladoDireito
 
-    #voltar um missionário
-    estado = [posicao[0] +1, posicao[1], 0]
-    listaDeEstados.append(estado)
+    def geraFilhos(self):
 
-    #voltar um canibal
-    estado = [posicao[0], posicao[1] +1, 0]
-    listaDeEstados.append(estado)
+        # Encontra o novo lado do rio
+        novoLadoRio = 'dir' if self.ladoRio == 'esq' else 'esq'
+        # Gera a lista de possíveis movimentos
+        movimentos = [
+            {'missionarios': 2, 'canibais': 0},
+            {'missionarios': 1, 'canibais': 0},
+            {'missionarios': 1, 'canibais': 1},
+            {'missionarios': 0, 'canibais': 1},
+            {'missionarios': 0, 'canibais': 2},
+        ]
+        # Gera todos os possíveis estados e armazena apenas os válidos na lista de filhos
+        # do estado atual
+        for movimento in movimentos:
+            if self.ladoRio == 'esq':
+                # Se o barco estiver a esquerda do rio, os missionários e canibais saem da
+                # margem esquerda do rio e vão para a direita
+                missionariosEsquerda = self.missionariosEsquerda - movimento['missionarios']
+                missionariosDireita = self.missionariosDireita + movimento['missionarios']
+                canibaisEsquerda = self.canibaisEsquerda - movimento['canibais']
+                canibaisDireita = self.canibaisDireita + movimento['canibais']
+            else:
+                # Caso contrário, os missionários e canibais saem da margem direita do rio
+                # e vão para a esquerda
+                missionariosDireita = self.missionariosDireita - movimento['missionarios']
+                missionariosEsquerda = self.missionariosEsquerda + movimento['missionarios']
+                canibaisDireita = self.canibaisDireita - movimento['canibais']
+                canibaisEsquerda = self.canibaisEsquerda + movimento['canibais']
+            # Cria o estado do filho e caso este seja válido, o adiciona à lista de filhos do pai
+            filho = Estado(missionariosEsquerda, missionariosDireita, canibaisEsquerda, canibaisDireita, novoLadoRio)
+            filho.pai = self
+            if filho.verificaEstado():
+                self.filhos.append(filho)
 
-    return listaDeEstados
+class Missionarios_Canibais():
 
-def bfs(start):
-	candidates = [start]
-	fathers = dict()
-	visited = [start]
+    def __init__(self):
+       
+        self.fila_execucao = [Estado(3, 0, 3, 0, 'esq')]
+        self.solucao = None
 
-	while len(candidates)>0:
-		father = candidates[0]
-		print("Lista de candidatos: ", candidates)
-		del candidates[0]
-		print("Visitado: ", father)
-		if estadoFinal(father):
-			res = []
-			node = father
-			while node != start:
-				res.append(node)
-				node = fathers[son2str(node)]
-			res.append(start)
-			res.reverse()
-			print("Solucao encontrada: ", res)
-		
-		for son in geraEstados(father):
-			if son not in visited:
-				print("Enfileirado: ", son, father)
-				visited.append(son)
-				fathers[son2str(son)] = father
-				candidates.append(son)
+    def geraSolucao(self):
+
+        # Realiza a busca em largura em busca da solução
+        for elemento in self.fila_execucao:   
+                     
+            if elemento.estadoFinal():
+                # Se a solução foi encontrada, o caminho que compõe a solução é gerado realizando
+                # o caminho de volta até a raiz da árvore de estados e então encerra a busca
+                self.solucao = [elemento]
+                while elemento.pai:
+                    self.solucao.insert(0, elemento.pai)
+                    elemento = elemento.pai
+                break
+            # Caso o elemento não seja a solução, gera seus filhos e os adiciona na fila de execução
+            elemento.geraFilhos()
+            self.fila_execucao.extend(elemento.filhos)
+
+
+def main():
+    # Instancia o problema e gera sua solução
+    problema = Missionarios_Canibais()
+    problema.geraSolucao()
+    # Exibe a solução em tela, separando cada passo
+    for estado in problema.solucao:
+        print(estado)
+        print(34 * '-')
 
 if __name__ == '__main__':
-	bfs([3,3,1])
+    start_time = time.time()
+    main()
+    print("--- %s segundos ---" % (time.time() - start_time))
