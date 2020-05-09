@@ -1,7 +1,7 @@
 import time
 
 
-class State:
+class Estado:
     def __init__(self, cannibalLeft, missionaryLeft, boat, cannibalRight, missionaryRight, action, h, g):
         self.cannibalLeft = cannibalLeft
         self.missionaryLeft = missionaryLeft
@@ -41,7 +41,7 @@ def successors(cur_state):
     children = list()
     if cur_state.boat == 'left':
         # send two missionaries from left to right
-        new_state = State(cur_state.cannibalLeft, cur_state.missionaryLeft - 2, 'right',
+        new_state = Estado(cur_state.cannibalLeft, cur_state.missionaryLeft - 2, 'right',
                           cur_state.cannibalRight, cur_state.missionaryRight + 2,
                           "send two missionaries from left to right",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -50,7 +50,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send two cannibals from left to right
-        new_state = State(cur_state.cannibalLeft - 2, cur_state.missionaryLeft, 'right',
+        new_state = Estado(cur_state.cannibalLeft - 2, cur_state.missionaryLeft, 'right',
                           cur_state.cannibalRight + 2, cur_state.missionaryRight,
                           "send two cannibals from left to right",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -59,7 +59,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one missionary and one cannibal from left to right
-        new_state = State(cur_state.cannibalLeft - 1, cur_state.missionaryLeft - 1, 'right',
+        new_state = Estado(cur_state.cannibalLeft - 1, cur_state.missionaryLeft - 1, 'right',
                           cur_state.cannibalRight + 1, cur_state.missionaryRight + 1,
                           "send one missionary and one cannibal from left to right",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -68,7 +68,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one missionary from left to right
-        new_state = State(cur_state.cannibalLeft, cur_state.missionaryLeft - 1, 'right',
+        new_state = Estado(cur_state.cannibalLeft, cur_state.missionaryLeft - 1, 'right',
                           cur_state.cannibalRight, cur_state.missionaryRight + 1,
                           "send one missionary from left to right",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -77,7 +77,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one cannibal from left to right
-        new_state = State(cur_state.cannibalLeft - 1, cur_state.missionaryLeft, 'right',
+        new_state = Estado(cur_state.cannibalLeft - 1, cur_state.missionaryLeft, 'right',
                           cur_state.cannibalRight + 1, cur_state.missionaryRight,
                           "send one cannibal from left to right",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -86,7 +86,7 @@ def successors(cur_state):
             children.append(new_state)
     else:
         # send two missionaries from right to left
-        new_state = State(cur_state.cannibalLeft, cur_state.missionaryLeft + 2, 'left',
+        new_state = Estado(cur_state.cannibalLeft, cur_state.missionaryLeft + 2, 'left',
                           cur_state.cannibalRight, cur_state.missionaryRight - 2,
                           "send two missionaries from right to left",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -95,7 +95,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send two cannibals from right to left
-        new_state = State(cur_state.cannibalLeft + 2, cur_state.missionaryLeft, 'left',
+        new_state = Estado(cur_state.cannibalLeft + 2, cur_state.missionaryLeft, 'left',
                           cur_state.cannibalRight - 2, cur_state.missionaryRight,
                           "send two cannibals from right to left",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -104,7 +104,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one missionary and one cannibal from right to left
-        new_state = State(cur_state.cannibalLeft + 1, cur_state.missionaryLeft + 1, 'left',
+        new_state = Estado(cur_state.cannibalLeft + 1, cur_state.missionaryLeft + 1, 'left',
                           cur_state.cannibalRight - 1, cur_state.missionaryRight - 1,
                           "send one missionary and one cannibal from right to left",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -113,7 +113,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one missionary from right to left
-        new_state = State(cur_state.cannibalLeft, cur_state.missionaryLeft + 1, 'left',
+        new_state = Estado(cur_state.cannibalLeft, cur_state.missionaryLeft + 1, 'left',
                           cur_state.cannibalRight, cur_state.missionaryRight - 1,
                           "send one missionary from right to left",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -122,7 +122,7 @@ def successors(cur_state):
             children.append(new_state)
 
         # send one cannibal from right to left
-        new_state = State(cur_state.cannibalLeft + 1, cur_state.missionaryLeft, 'left',
+        new_state = Estado(cur_state.cannibalLeft + 1, cur_state.missionaryLeft, 'left',
                           cur_state.cannibalRight - 1, cur_state.missionaryRight,
                           "send one cannibal from right to left",
                           cur_state.cannibalLeft + cur_state.missionaryLeft - 1, cur_state.g + 1)
@@ -140,7 +140,7 @@ def successors(cur_state):
 
 
 def a_star():
-    initial_state = State(3, 3, 'left', 0, 0, "no action yet", 5, 0)
+    initial_state = Estado(3, 3, 'left', 0, 0, "no action yet", 5, 0)
 
     if initial_state.is_goal():
         return initial_state
