@@ -1,3 +1,9 @@
+# Acadêmicos:
+
+# Ana Gabrielly Mendes Pedroso
+# Davidson Denis Ferreira Guimaraes
+# Larissa Fraga Pinto
+
 import time
 
 class Estado():        
