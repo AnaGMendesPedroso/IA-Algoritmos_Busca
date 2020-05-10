@@ -21,18 +21,12 @@ def encher(pote):
             novo_pote = Pote(5, 5)
         elif pote.capacidade_max == 7:
             novo_pote = Pote(7, 7)
-    else:
-        print("Não é possível encher o pote " + str(pote.capacidade_max))
-        print("Conteudo = " + str(pote.conteudo))
     return novo_pote
 
 def esvaziar(pote):
     novo_pote = None
-    if pote.conteudo > pote.capacidade_max:
+    if pote.conteudo > 0:
         novo_pote = Pote(0, pote.capacidade_max)
-    else:
-        print("Não é possível esvaziar o pote " + str(pote.capacidade_max))
-        print("Conteudo = " + str(pote.conteudo))
     return novo_pote
 
 
@@ -40,16 +34,12 @@ def verter(origem, destino):
     vet_potes = []
     novo_pote_origem = None
     novo_pote_destino = None
-    if not (origem.conteudo == 0 and destino.conteudo == 0) and destino.conteudo + origem.conteudo <= destino.capacidade_max:
-        novo_pote_destino = Pote(origem.conteudo, destino.capacidade_max)
+    if origem.conteudo != 0 and destino.conteudo + origem.conteudo <= destino.capacidade_max:
+        novo_pote_destino = Pote((destino.conteudo + origem.conteudo), destino.capacidade_max)
         novo_pote_origem = Pote(0, origem.capacidade_max)
 
         vet_potes.append(novo_pote_origem)
         vet_potes.append(novo_pote_destino)
-    else:
-        print("Não é possível verter o pote " + str(origem.capacidade_max) + " no pote " + str(destino.capacidade_max))
-        print("Conteudo origem = " + str(origem.conteudo))
-        print("Conteudo destino = " + str(destino.conteudo))
 
     return vet_potes
 
@@ -65,6 +55,7 @@ class No:
         self.pote_cinco = pote_cinco
         self.pote_sete = pote_sete
         self.lista_filhos = []
+        self.lista_pais = []
 
 class Grafo:
 
@@ -75,6 +66,14 @@ class Grafo:
 
     def get_lista_nos_grafo(self):
         return self.nos_grafo
+
+    def verifica_no_ja_inserido(self, no):
+        verifica = False
+        for no_inserido in self.nos_grafo:
+            if compara_nos(no, no_inserido):
+                verifica = no_inserido
+                break
+        return verifica
 
     def gerar_grafo(self):
         for no in self.nos_grafo:
@@ -89,28 +88,43 @@ class Grafo:
 
     def gerar_nos_filhos(self, no_pai):
         if not esvaziar(no_pai.pote_cinco) is None:
-            no_pai.lista_filhos.append(No(esvaziar(no_pai.pote_cinco), no_pai.pote_sete))
+            filho = No(esvaziar(no_pai.pote_cinco), no_pai.pote_sete)
+            self.valida_e_insere(filho, no_pai)
 
         if not esvaziar(no_pai.pote_sete) is None:
-            no_pai.lista_filhos.append(No(no_pai.pote_cinco, esvaziar(no_pai.pote_sete)))
+            filho = No(no_pai.pote_cinco, esvaziar(no_pai.pote_sete))
+            self.valida_e_insere(filho, no_pai)
 
         if not encher(no_pai.pote_cinco) is None:
-            no_pai.lista_filhos.append(No(encher(no_pai.pote_cinco), no_pai.pote_sete))
+            filho = No(encher(no_pai.pote_cinco), no_pai.pote_sete)
+            self.valida_e_insere(filho, no_pai)
 
         if not encher(no_pai.pote_sete) is None:
-            no_pai.lista_filhos.append(No(no_pai.pote_cinco, encher(no_pai.pote_sete)))
+            filho = No(no_pai.pote_cinco, encher(no_pai.pote_sete))
+            self.valida_e_insere(filho, no_pai)
 
         if len(verter(no_pai.pote_cinco, no_pai.pote_sete)) > 0:
             nos_verter = verter(no_pai.pote_cinco, no_pai.pote_sete)
-            pot5 = nos_verter.index(0)
-            pot7 = nos_verter.index(1)
-            no_pai.lista_filhos.append(No(pot5, pot7))
+            pot5 = nos_verter.pop(0)
+            pot7 = nos_verter.pop(1)
+            filho = No(pot5, pot7)
+            self.valida_e_insere(filho, no_pai)
 
         if len(verter(no_pai.pote_sete, no_pai.pote_cinco)) > 0:
             nos_verter = verter(no_pai.pote_sete, no_pai.pote_cinco)
-            pot5 = nos_verter.index(0)
-            pot7 = nos_verter.index(1)
-            no_pai.lista_filhos.append(No(pot5, pot7))
+            pot5 = nos_verter.pop(1)
+            pot7 = nos_verter.pop(0)
+            filho = No(pot5, pot7)
+            self.valida_e_insere(filho, no_pai)
+
+    def valida_e_insere(self, filho, no_pai):
+        old = self.verifica_no_ja_inserido(filho)
+        if not old:
+            no_pai.lista_filhos.append(filho)
+            filho.lista_pais.append(no_pai)
+        else:
+            no_pai.lista_filhos.append(old)
+            old.lista_pais.append(no_pai)
 
 
 class DFS:

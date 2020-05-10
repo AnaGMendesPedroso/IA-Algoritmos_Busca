@@ -1,3 +1,9 @@
+# Acadêmicos:
+# - Ana Gabrielly Mendes Pedroso
+# - Davidson Denis Ferreira Guimaraes
+# - Larissa Fraga Pinto
+
+
 import src.missionarios_dfs.dfs
 
 from datetime import datetime
