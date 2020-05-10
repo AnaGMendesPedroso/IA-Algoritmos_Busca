@@ -51,3 +51,4 @@ diferenca_segundo = fim_execucao_segundo - inicio_execucao_segundo
 diferenca_microsegundo = fim_execucao_microsegundo - inicio_execucao_microsegundo
 
 print("Tempo de execução DFS:  %d:%d:%d:%d" %(diferenca_hora, diferenca_minuto, diferenca_segundo, diferenca_microsegundo))
+print("Número de estados expandidos: "+ str(len(dfs.nos_visitados)))
