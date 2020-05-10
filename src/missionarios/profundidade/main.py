@@ -4,17 +4,17 @@
 # - Larissa Fraga Pinto
 
 
-import src.missionarios_dfs.dfs
+import src.missionarios.profundidade.profundidade
 
 from datetime import datetime
 
 
 movimentos_validos = []
-mov1 = src.missionarios_dfs.dfs.Movimento(1, 0)
-mov2 = src.missionarios_dfs.dfs.Movimento(2, 0)
-mov3 = src.missionarios_dfs.dfs.Movimento(0, 1)
-mov4 = src.missionarios_dfs.dfs.Movimento(0, 2)
-mov5 = src.missionarios_dfs.dfs.Movimento(1, 1)
+mov1 = src.missionarios.profundidade.profundidade.Movimento(1, 0)
+mov2 = src.missionarios.profundidade.profundidade.Movimento(2, 0)
+mov3 = src.missionarios.profundidade.profundidade.Movimento(0, 1)
+mov4 = src.missionarios.profundidade.profundidade.Movimento(0, 2)
+mov5 = src.missionarios.profundidade.profundidade.Movimento(1, 1)
 
 movimentos_validos.append(mov1)
 movimentos_validos.append(mov2)
@@ -22,11 +22,11 @@ movimentos_validos.append(mov3)
 movimentos_validos.append(mov4)
 movimentos_validos.append(mov5)
 
-no_inicial = src.missionarios_dfs.dfs.No(3, 3, 1)
-no_final = src.missionarios_dfs.dfs.No(0, 0, 0)
-grafo = src.missionarios_dfs.dfs.Grafo(no_inicial, no_final, movimentos_validos)
+no_inicial = src.missionarios.profundidade.profundidade.No(3, 3, 1)
+no_final = src.missionarios.profundidade.profundidade.No(0, 0, 0)
+grafo = src.missionarios.profundidade.profundidade.Grafo(no_inicial, no_final, movimentos_validos)
 grafo.gerar_grafo()
-dfs = src.missionarios_dfs.dfs.DFS(grafo.get_lista_nos_grafo(), no_inicial, no_final)
+dfs = src.missionarios.profundidade.profundidade.DFS(grafo.get_lista_nos_grafo(), no_inicial, no_final)
 
 inicio = datetime.now()
 dfs.busca_em_profundidade()

@@ -1,3 +1,8 @@
+# Acadêmicos:
+# - Ana Gabrielly Mendes Pedroso
+# - Davidson Denis Ferreira Guimaraes
+# - Larissa Fraga Pinto
+
 def son2str(pote):
 	return ' '.join([str(v) for v in pote])
 

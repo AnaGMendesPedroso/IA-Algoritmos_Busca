@@ -4,16 +4,16 @@
 # - Larissa Fraga Pinto
 
 
-import src.potes_dfs.dfs
+import src.potes.profundidade.profundidade
 
 from datetime import datetime
 
-pote5 = src.potes_dfs.dfs.Pote(0,5)
-pote7 = src.potes_dfs.dfs.Pote(0,7)
-no_inicial = src.potes_dfs.dfs.No(pote5,pote7)
-grafo = src.potes_dfs.dfs.Grafo(no_inicial)
+pote5 = src.potes.profundidade.profundidade.Pote(0, 5)
+pote7 = src.potes.profundidade.profundidade.Pote(0, 7)
+no_inicial = src.potes.profundidade.profundidade.No(pote5, pote7)
+grafo = src.potes.profundidade.profundidade.Grafo(no_inicial)
 grafo.gerar_grafo()
-dfs = src.potes_dfs.dfs.DFS(grafo.get_lista_nos_grafo(), no_inicial)
+dfs = src.potes.profundidade.profundidade.DFS(grafo.get_lista_nos_grafo(), no_inicial)
 
 inicio = datetime.now()
 dfs.busca_em_profundidade()
