@@ -96,7 +96,7 @@ class Bfs():
                     self.solucao.insert(0, elemento.pai)
                     elemento = elemento.pai
                 break
-            # Caso o elemento ao for a solucao, gera seus filhos e os adiciona na fila de execução
+            # Caso o elemento nao for a solucao, gera seus filhos e os adiciona na fila de execucao
             elemento.geraFilhos()
             self.filaExecucao.extend(elemento.filhos)
 
