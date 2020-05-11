@@ -1,11 +1,11 @@
-# Acadêmicos:
+# Academicos:
 # - Ana Gabrielly Mendes Pedroso
 # - Davidson Denis Ferreira Guimaraes
 # - Larissa Fraga Pinto
 
 import time
 
-# Classe Estado que tem como objetivo mostrar o atual estado da transição
+# Classe Estado que mostra o atual estado da transicao
 class Estado:
     def __init__(self, canibalEsquerda, missionarioEsquerda, barco, canibalDireita, missionarioDireita, action, movimentosPossiveis, custoPorMovimento):
         self.canibalEsquerda = canibalEsquerda
@@ -209,7 +209,7 @@ def mostrarSolucao(solucao):
                 print ("Estado " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
                 + ",0," + str(estado.canibalDireita) + "," + \
                 str(estado.missionarioDireita) + ">")
-        print (34 * "-")
+        print('----------------------------------')
 
 
 def main():
@@ -219,7 +219,6 @@ def main():
     mostrarSolucao(solucao)
 
 
-# MAIN 
 if __name__ == "__main__":
     start_time = time.time()
     main()
