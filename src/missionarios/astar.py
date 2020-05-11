@@ -45,91 +45,92 @@ class Estado:
 def successors(estado):
     children = list()
     if estado.barco == 'left':
-        # send two missionaries from left to right
+
+        # envia dois missionarios da esquerda para direita
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda - 2, 'right',
                           estado.canibalDireita, estado.missionarioDireita + 2,
-                          "send two missionaries from left to right",
+                          "envia dois missionarios da esquerda para direita",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send two cannibals from left to right
+        # envia dois canibais da esquerda para direita
         novoEstado = Estado(estado.canibalEsquerda - 2, estado.missionarioEsquerda, 'right',
                           estado.canibalDireita + 2, estado.missionarioDireita,
-                          "send two cannibals from left to right",
+                          "envia dois canibais da esquerda para direita",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one missionary and one cannibal from left to right
+        # envia um missionario e um canibal da esquerda para direita
         novoEstado = Estado(estado.canibalEsquerda - 1, estado.missionarioEsquerda - 1, 'right',
                           estado.canibalDireita + 1, estado.missionarioDireita + 1,
-                          "send one missionary and one cannibal from left to right",
+                          "envia um missionario e um canibal da esquerda para direita",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one missionary from left to right
+        # envia um missionario da esquerda para a direita
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda - 1, 'right',
                           estado.canibalDireita, estado.missionarioDireita + 1,
-                          "send one missionary from left to right",
+                          "envia um missionario da esquerda para a direita",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one cannibal from left to right
+        # envia um canibal da esquerda para a direita
         novoEstado = Estado(estado.canibalEsquerda - 1, estado.missionarioEsquerda, 'right',
                           estado.canibalDireita + 1, estado.missionarioDireita,
-                          "send one cannibal from left to right",
+                          "envia um canibal da esquerda para a direita",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
     else:
-        # send two missionaries from right to left
+        # envia dois missionarios da direita para esquerda
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda + 2, 'left',
                           estado.canibalDireita, estado.missionarioDireita - 2,
-                          "send two missionaries from right to left",
+                          "envia dois missionarios da direita para esquerda",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send two cannibals from right to left
+        # envia dois canibais da direita para a esquerda
         novoEstado = Estado(estado.canibalEsquerda + 2, estado.missionarioEsquerda, 'left',
                           estado.canibalDireita - 2, estado.missionarioDireita,
-                          "send two cannibals from right to left",
+                          "envia dois canibais da direita para a esquerda",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one missionary and one cannibal from right to left
+        # envia um missionario e um canibal da direita para esquerda
         novoEstado = Estado(estado.canibalEsquerda + 1, estado.missionarioEsquerda + 1, 'left',
                           estado.canibalDireita - 1, estado.missionarioDireita - 1,
-                          "send one missionary and one cannibal from right to left",
+                          "envia um missionario e um canibal da direita para esquerda",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one missionary from right to left
+        # envia uma missionario da direita para a esquerda
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda + 1, 'left',
                           estado.canibalDireita, estado.missionarioDireita - 1,
-                          "send one missionary from right to left",
+                          "envia uma missionario da direita para a esquerda",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
 
-        # send one cannibal from right to left
+        # envia um canibal da direita para a esquerda
         novoEstado = Estado(estado.canibalEsquerda + 1, estado.missionarioEsquerda, 'left',
                           estado.canibalDireita - 1, estado.missionarioDireita,
-                          "send one cannibal from right to left",
+                          "envia um canibal da direita para a esquerda",
                           estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
@@ -137,15 +138,9 @@ def successors(estado):
 
     return children
 
-# Heuristic: To come up with a heuristic we can try to solve a relaxed problem. If we do not take into
-# account the possibility of cannibals eating missionaries, we can compute how many trips are
-# needed to take everyone across. The boat takes two people, but after each trip across the
-# boat has to come back to the starting side and so at least one person must paddle back. This
-# will give us the following heuristic: number of people on initial side - 1
-
 
 def a_star():
-    initial_state = Estado(3, 3, 'left', 0, 0, "no action yet", 5, 0)
+    initial_state = Estado(3, 3, 'left', 0, 0, "Sem movimentos", 5, 0)
 
     if initial_state.is_goal():
         return initial_state
@@ -190,19 +185,29 @@ def mostrarSolucao(solution):
         path.append(parent)
         parent = parent.parent
 
-    print("initial state: <3,3,left,0,0>")
+    print("estado inicial: <3,3,1,0,0>")
     for i in range(1, len(path)):
         state = path[len(path) - i - 1]
-        print ("action" + str(i) + ": " + state.action)
-        if i == len(path)-1:
-            print ("goal state" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-                  + "," + state.barco + "," + str(state.canibalDireita) + "," + \
-                  str(state.missionarioDireita) + ">")
-        else:
-            print ("state" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-              + "," + state.barco + "," + str(state.canibalDireita) + "," + \
-              str(state.missionarioDireita) + ">")
+        print ("Estado" + str(i) + ": " + state.action)
 
+        if(state.barco == 'left'):
+            if i == len(path)-1:
+                print ("Estado objetivo " + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
+                    + ",1," + str(state.canibalDireita) + "," + \
+                    str(state.missionarioDireita) + ">")
+            else:
+                print ("Estado" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
+                + ",1," + str(state.canibalDireita) + "," + \
+                str(state.missionarioDireita) + ">")
+        else:
+            if i == len(path)-1:
+                print ("Estado objetivo " + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
+                    + ",0," + str(state.canibalDireita) + "," + \
+                    str(state.missionarioDireita) + ">")
+            else:
+                print ("Estado" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
+                + ",0," + str(state.canibalDireita) + "," + \
+                str(state.missionarioDireita) + ">")
 
 def main():
 
