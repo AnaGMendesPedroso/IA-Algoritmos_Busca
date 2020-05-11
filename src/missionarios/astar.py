@@ -185,14 +185,15 @@ def mostrarSolucao(solucao):
         path.append(parent)
         parent = parent.parent
 
-    print("estado inicial: <3,3,1,0,0>")
+    print("Estado inicial: <3,3,1,0,0>")
+    print (34 * "-")
+
     for i in range(1, len(path)):
         estado = path[len(path) - i - 1]
-        print ("Estado " + str(i) + ": " + estado.action)
 
         if(estado.barco == 'left'):
             if i == len(path)-1:
-                print ("Estado objetivo " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                print ("Estado Final " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
                     + ",1," + str(estado.canibalDireita) + "," + \
                     str(estado.missionarioDireita) + ">")
             else:
@@ -201,7 +202,7 @@ def mostrarSolucao(solucao):
                 str(estado.missionarioDireita) + ">")
         else:
             if i == len(path)-1:
-                print ("Estado objetivo " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                print ("Estado Final " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
                     + ",0," + str(estado.canibalDireita) + "," + \
                     str(estado.missionarioDireita) + ">")
             else:
