@@ -7,15 +7,15 @@ import time
 
 # Classe Estado que tem como objetivo mostrar o atual estado da transição
 class Estado:
-    def __init__(self, canibalEsquerda, missionarioEsquerda, barco, canibalDireita, missionarioDireita, action, h, g):
+    def __init__(self, canibalEsquerda, missionarioEsquerda, barco, canibalDireita, missionarioDireita, action, movimentosPossiveis, custoPorMovimento):
         self.canibalEsquerda = canibalEsquerda
         self.missionarioEsquerda = missionarioEsquerda
         self.barco = barco
         self.canibalDireita = canibalDireita
         self.missionarioDireita = missionarioDireita
         self.action = action
-        self.h = h
-        self.g = g
+        self.movimentosPossiveis = movimentosPossiveis
+        self.custoPorMovimento = custoPorMovimento
         self.parent = None
 
     def is_goal(self):
@@ -42,7 +42,7 @@ class Estado:
         return hash((self.canibalEsquerda, self.missionarioEsquerda, self.barco, self.canibalDireita, self.missionarioDireita))
 
 
-def successors(estado):
+def sucessores(estado):
     children = list()
     if estado.barco == 'left':
 
@@ -50,7 +50,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda - 2, 'right',
                           estado.canibalDireita, estado.missionarioDireita + 2,
                           "envia dois missionarios da esquerda para direita",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -59,7 +59,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda - 2, estado.missionarioEsquerda, 'right',
                           estado.canibalDireita + 2, estado.missionarioDireita,
                           "envia dois canibais da esquerda para direita",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -68,7 +68,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda - 1, estado.missionarioEsquerda - 1, 'right',
                           estado.canibalDireita + 1, estado.missionarioDireita + 1,
                           "envia um missionario e um canibal da esquerda para direita",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -77,7 +77,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda - 1, 'right',
                           estado.canibalDireita, estado.missionarioDireita + 1,
                           "envia um missionario da esquerda para a direita",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -86,7 +86,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda - 1, estado.missionarioEsquerda, 'right',
                           estado.canibalDireita + 1, estado.missionarioDireita,
                           "envia um canibal da esquerda para a direita",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -95,7 +95,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda + 2, 'left',
                           estado.canibalDireita, estado.missionarioDireita - 2,
                           "envia dois missionarios da direita para esquerda",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -104,7 +104,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda + 2, estado.missionarioEsquerda, 'left',
                           estado.canibalDireita - 2, estado.missionarioDireita,
                           "envia dois canibais da direita para a esquerda",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -113,7 +113,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda + 1, estado.missionarioEsquerda + 1, 'left',
                           estado.canibalDireita - 1, estado.missionarioDireita - 1,
                           "envia um missionario e um canibal da direita para esquerda",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -122,7 +122,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda, estado.missionarioEsquerda + 1, 'left',
                           estado.canibalDireita, estado.missionarioDireita - 1,
                           "envia uma missionario da direita para a esquerda",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -131,7 +131,7 @@ def successors(estado):
         novoEstado = Estado(estado.canibalEsquerda + 1, estado.missionarioEsquerda, 'left',
                           estado.canibalDireita - 1, estado.missionarioDireita,
                           "envia um canibal da direita para a esquerda",
-                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.g + 1)
+                          estado.canibalEsquerda + estado.missionarioEsquerda - 1, estado.custoPorMovimento + 1)
         if novoEstado.is_valid():
             novoEstado.parent = estado
             children.append(novoEstado)
@@ -139,47 +139,47 @@ def successors(estado):
     return children
 
 
-def a_star():
-    initial_state = Estado(3, 3, 'left', 0, 0, "Sem movimentos", 5, 0)
+def algoritmoASTAR():
+    estadoInicial = Estado(3, 3, 'left', 0, 0, "Sem movimentos", 5, 0)
 
-    if initial_state.is_goal():
-        return initial_state
+    if estadoInicial.is_goal():
+        return estadoInicial
 
-    frontier = list()
-    visited = set()
+    fronteira = list()
+    visitado = set()
 
-    frontier.append(initial_state)
+    fronteira.append(estadoInicial)
 
-    while frontier:
-        costs = list()
-        for node in frontier:
-            costs.append(node.h + node.g)
-        index = costs.index(min(costs))
-        state = frontier.pop(index)
+    while fronteira:
+        custo = list()
+        for node in fronteira:
+            custo.append(node.movimentosPossiveis + node.custoPorMovimento)
+        index = custo.index(min(custo))
+        estado = fronteira.pop(index)
 
-        if state.is_goal():
-            return state
+        if estado.is_goal():
+            return estado
 
-        visited.add(state)
+        visitado.add(estado)
 
-        children = successors(state)
-        for child in children:
-            if (child in visited) and (state.g < child.g):
-                child.g = state.g
-                child.parent = state
-            elif (child in frontier) and (state.g < child.g):
-                child.g = state.g
-                child.parent = state
+        filhos = sucessores(estado)
+        for filho in filhos:
+            if (filho in visitado) and (estado.custoPorMovimento < filho.custoPorMovimento):
+                filho.custoPorMovimento = estado.custoPorMovimento
+                filho.parent = estado
+            elif (filho in fronteira) and (estado.custoPorMovimento < filho.custoPorMovimento):
+                filho.custoPorMovimento = estado.custoPorMovimento
+                filho.parent = estado
             else:
-                frontier.append(child)
-                child.g = state.g
+                fronteira.append(filho)
+                filho.custoPorMovimento = estado.custoPorMovimento
     return None
 
 
-def mostrarSolucao(solution):
+def mostrarSolucao(solucao):
     path = list()
-    path.append(solution)
-    parent = solution.parent
+    path.append(solucao)
+    parent = solucao.parent
 
     while parent:
         path.append(parent)
@@ -187,36 +187,38 @@ def mostrarSolucao(solution):
 
     print("estado inicial: <3,3,1,0,0>")
     for i in range(1, len(path)):
-        state = path[len(path) - i - 1]
-        print ("Estado" + str(i) + ": " + state.action)
+        estado = path[len(path) - i - 1]
+        print ("Estado " + str(i) + ": " + estado.action)
 
-        if(state.barco == 'left'):
+        if(estado.barco == 'left'):
             if i == len(path)-1:
-                print ("Estado objetivo " + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-                    + ",1," + str(state.canibalDireita) + "," + \
-                    str(state.missionarioDireita) + ">")
+                print ("Estado objetivo " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                    + ",1," + str(estado.canibalDireita) + "," + \
+                    str(estado.missionarioDireita) + ">")
             else:
-                print ("Estado" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-                + ",1," + str(state.canibalDireita) + "," + \
-                str(state.missionarioDireita) + ">")
+                print ("Estado " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                + ",1," + str(estado.canibalDireita) + "," + \
+                str(estado.missionarioDireita) + ">")
         else:
             if i == len(path)-1:
-                print ("Estado objetivo " + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-                    + ",0," + str(state.canibalDireita) + "," + \
-                    str(state.missionarioDireita) + ">")
+                print ("Estado objetivo " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                    + ",0," + str(estado.canibalDireita) + "," + \
+                    str(estado.missionarioDireita) + ">")
             else:
-                print ("Estado" + str(i) + ": <" + str(state.canibalEsquerda) + "," + str(state.missionarioEsquerda) \
-                + ",0," + str(state.canibalDireita) + "," + \
-                str(state.missionarioDireita) + ">")
+                print ("Estado " + str(i) + ": <" + str(estado.canibalEsquerda) + "," + str(estado.missionarioEsquerda) \
+                + ",0," + str(estado.canibalDireita) + "," + \
+                str(estado.missionarioDireita) + ">")
+        print (34 * "-")
+
 
 def main():
 
-    solucao = a_star()
+    solucao = algoritmoASTAR()
     print("( Canibais esquerda, Missionarios esquerda, posicao barco, Canibais Direita, Missionarios Direita )")
     mostrarSolucao(solucao)
 
 
-# if called from the command line, call main()
+# MAIN 
 if __name__ == "__main__":
     start_time = time.time()
     main()
